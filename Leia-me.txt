@@ -1,0 +1,9 @@
+Tive que modificar o arquivo localizado em vendor/slim/slim/Slim/Util.php na linha 59 e substituir a variável por
+false:
+$strip = is_null($overrideStripSlashes) ? false : $overrideStripSlashes;
+        if ($strip) {
+            return self::_stripSlashes($rawData);
+        } else {
+            return $rawData;
+        }
+    }
