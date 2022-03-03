@@ -14,3 +14,7 @@ a biblioteca gd:
 inicio: ;extension=gd
 fim: extension=gd
 tirando o ponto e virgula, salvando e reiniciando o servidor funcionou.
+
+Quando for criar cadastrar novo usuário no painel não esquecer de selecionar a checkbox Administrador
+
+O email do usuário não pode ser o mesmo do administrador ou não conseguira redefinir a senha.

@@ -28,6 +28,8 @@ class User extends Model {
     return $user;
   }
 
+ 
+
   public static function checkLogin($inadmin = true)
   {
 
