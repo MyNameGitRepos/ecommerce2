@@ -15,6 +15,8 @@
     <div class="container">
         <div class="row">                
             <div class="col-md-12">
+            
+                    estava tentando um sistema de verificação de email
             <?php if( $error != '' ){ ?>
 
             <div class="alert alert-danger">
@@ -23,7 +25,7 @@
                 </div>
                 <?php } ?>
 
- 
+            
                 <form id="login-form-wrap" class="login" method="post" action="/forgot">
                     <h2>Recuperar senha</h2>
                     <p class="form-row form-row-first">
