@@ -471,7 +471,7 @@ $app->get("/profile/change-password", function(){
 });
 
 $app->post("/profile/change-password", function(){
- 
+
    if(!isset($_POST['current_pass']) || $_POST['current_pass'] === ''){
     User::setError("Digite a senha atual.");
     header("Location: /profile/change-password");

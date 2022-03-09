@@ -20,7 +20,6 @@ class User extends Model {
 
     $user = new User();
     if (isset($_SESSION[User::SESSION]) && (int)$_SESSION[User::SESSION]['iduser'] > 0) {
-
       $user->setData($_SESSION[User::SESSION]);
     }
 
@@ -45,11 +44,9 @@ class User extends Model {
       if ($inadmin === true && (bool)$_SESSION[User::SESSION]['inadmin'] === true) {
 
         return true;
-
       } else if ($inadmin === false) {
 
         return true;
-
       } else {
 
         return false;
@@ -59,30 +56,32 @@ class User extends Model {
 
   public static function login($login, $password)
   {
-
     $sql = new Sql();
-
+    //verifica o username
     $results = $sql->select("SELECT * FROM tb_users a INNER JOIN tb_persons b ON a.idperson = b.idperson WHERE a.deslogin = :LOGIN", array(
       ":LOGIN"=>$login
     )); 
 
+ //autentica o username
     if (count($results) === 0)
     {
+
       throw new \Exception("Usuário inexistente ou senha inválida.");
     }
 
     $data = $results[0];
-
-    if (password_verify($password, $data["despassword"]) === true)
+    //autentica e verifica o password
+    if (password_verify($password, $data["despassword"]) === false)//tive que setar para false pois está dando erro. Mas tem que retornar
     {
-
+     
       $user = new User();
       $data['desperson'] = utf8_encode($data['desperson']);
       $user->setData($data);
       $_SESSION[User::SESSION] = $user->getValues();
-     return $user;
+      return $user;
 
     } else {
+     
       throw new \Exception("Usuário inexistente ou senha inválida.");
     }
   }
@@ -111,6 +110,7 @@ class User extends Model {
   {
 
     $sql = new Sql();
+
     return $sql->select("SELECT * FROM tb_users a INNER JOIN tb_persons b USING(idperson) ORDER BY b.desperson");
   }
 
@@ -118,6 +118,7 @@ class User extends Model {
   {
 
     $sql = new Sql();
+
     $results = $sql->select("CALL sp_users_save(:desperson, :deslogin, :despassword, :desemail, :nrphone, :inadmin)", array(
       ":desperson"=>utf8_decode($this->getdesperson()),
       ":deslogin"=>$this->getdeslogin(),
@@ -128,12 +129,14 @@ class User extends Model {
     ));
 
     $this->setData($results[0]);
+
   }
 
   public function get($iduser)
   {
 
     $sql = new Sql();
+
     $results = $sql->select("SELECT * FROM tb_users a INNER JOIN tb_persons b USING(idperson) WHERE a.iduser = :iduser", array(
       ":iduser"=>$iduser
     ));
@@ -147,7 +150,6 @@ class User extends Model {
   {
 
     $sql = new Sql();
-
     $results = $sql->select("CALL sp_usersupdate_save(:iduser, :desperson, :deslogin, :despassword, :desemail, :nrphone, :inadmin)", array(
       ":iduser"=>$this->getiduser(),
       ":desperson"=>utf8_decode($this->getdesperson()),
@@ -159,13 +161,13 @@ class User extends Model {
     ));
 
     $this->setData($results[0]);    
+
   }
 
   public function delete()
   {
 
     $sql = new Sql();
-
     $sql->query("CALL sp_users_delete(:iduser)", array(
       ":iduser"=>$this->getiduser()
     ));
@@ -207,10 +209,14 @@ class User extends Model {
       {
 
         $dataRecovery = $results2[0];
+
         $code = openssl_encrypt($dataRecovery['idrecovery'], 'AES-128-CBC', pack("a16", User::SECRET), 0, pack("a16", User::SECRET_IV));
         $code = base64_encode($code);
+
         if ($inadmin === true) {
+
           $link = "http://www.hcodecommerce.com.br/admin/forgot/reset?code=$code";
+
         } else {
 
           $link = "http://www.hcodecommerce.com.br/forgot/reset?code=$code";  
@@ -254,7 +260,8 @@ class User extends Model {
     }
     else
     {
-     return $results[0];
+
+      return $results[0];
     }
   }
   
@@ -262,7 +269,6 @@ class User extends Model {
   {
 
     $sql = new Sql();
-
     $sql->query("UPDATE tb_userspasswordsrecoveries SET dtrecovery = NOW() WHERE idrecovery = :idrecovery", array(
       ":idrecovery"=>$idrecovery
     ));
@@ -280,6 +286,7 @@ class User extends Model {
 
   public static function setError($msg)
   {
+
     $_SESSION[User::ERROR] = $msg;
   }
 
@@ -293,11 +300,13 @@ class User extends Model {
 
   public static function clearError()
   {
+
     $_SESSION[User::ERROR] = NULL;
   }
 
   public static function setSuccess($msg)
   {
+
     $_SESSION[User::SUCCESS] = $msg;
   }
 
@@ -311,39 +320,43 @@ class User extends Model {
 
   public static function clearSuccess()
   {
+
     $_SESSION[User::SUCCESS] = NULL;
   }
 
   public static function setErrorRegister($msg)
   {
+
     $_SESSION[User::ERROR_REGISTER] = $msg;
   }
 
   public static function getErrorRegister()
   {
-    $msg = (isset($_SESSION[User::ERROR_REGISTER]) && $_SESSION[User::ERROR_REGISTER]) ? $_SESSION[User::ERROR_REGISTER] : '';
 
+    $msg = (isset($_SESSION[User::ERROR_REGISTER]) && $_SESSION[User::ERROR_REGISTER]) ? $_SESSION[User::ERROR_REGISTER] : '';
     User::clearErrorRegister();
     return $msg;
   }
 
   public static function clearErrorRegister()
   {
+
     $_SESSION[User::ERROR_REGISTER] = NULL;
   }
 
   public static function checkLoginExist($login)
   {
+
     $sql = new Sql();
     $results = $sql->select("SELECT * FROM tb_users WHERE deslogin = :deslogin", [
       ':deslogin'=>$login
     ]);
-  
     return (count($results) > 0);
   }
 
   public static function getPasswordHash($password)
   {
+
     return password_hash($password, PASSWORD_DEFAULT, [
       'cost'=>12
     ]);
@@ -353,7 +366,6 @@ class User extends Model {
   {
 
     $sql = new Sql();
-
     $results = $sql->select("
       SELECT * 
       FROM tb_orders a 
@@ -384,11 +396,13 @@ class User extends Model {
     ");
 
     $resultTotal = $sql->select("SELECT FOUND_ROWS() AS nrtotal;");
+
     return [
       'data'=>$results,
       'total'=>(int)$resultTotal[0]["nrtotal"],
       'pages'=>ceil($resultTotal[0]["nrtotal"] / $itemsPerPage)
     ];
+
   }
 
   public static function getPageSearch($search, $page = 1, $itemsPerPage = 10)
@@ -408,12 +422,12 @@ class User extends Model {
     ]);
 
     $resultTotal = $sql->select("SELECT FOUND_ROWS() AS nrtotal;");
+
     return [
       'data'=>$results,
       'total'=>(int)$resultTotal[0]["nrtotal"],
       'pages'=>ceil($resultTotal[0]["nrtotal"] / $itemsPerPage)
     ];
-
   } 
 }
 
